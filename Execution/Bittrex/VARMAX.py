@@ -1,5 +1,7 @@
 __author__ = 'Ian'
 
+
+import datetime
 import pandas as pd
 import requests
 import os
@@ -7,45 +9,35 @@ from statsmodels.tsa.api import VAR
 import time
 from Execution.Bittrex.bittrex import Bittrex
 
-def hourly_price_historical(symbol, comparison_symbol, limit, aggregate, exchange=''):
-    url = 'https://min-api.cryptocompare.com/data/histohour?fsym={}&tsym={}&limit={}&aggregate={}'\
-            .format(symbol.upper(), comparison_symbol.upper(), limit, aggregate)
-    if exchange:
-        url += '&e={}'.format(exchange)
-    page = requests.get(url)
-    data = page.json()['Data']
-    df = pd.DataFrame(data)
-    return df
-
-def get_last_hour_data(coins = ['ETH', 'XRP', 'LTC', 'DASH', 'XMR']):
+def get_recent_data(bit2, coins = ['ETH', 'XRP', 'LTC', 'DASH', 'XMR'], freq = 'hour'):
 
     '''
+    :param bit2: bittrex object of v2
     :param coins: list of coin tickers of interest
-    :return:
+    :param freq: frequency of ticks, see bittrex.py for details
+    :return: pandas dataframe
     '''
 
     i = 0
 
     for coin in coins:
 
-        compare_coin = 'BTC'
-        time_delta = 1
-        coin_df = hourly_price_historical(coin, compare_coin, 599, time_delta)
+        coin_df = pd.DataFrame((bit2.get_candles('BTC-{}'.format(coin), tick_interval= freq)['result']))
 
-        coin_df.index = coin_df['time']
+        coin_df.index = coin_df['T']
 
-        x_df = pd.DataFrame(index= coin_df['time'])
+        x_df = pd.DataFrame(index= coin_df['T'])
 
-        x_df['spread_{}'.format(coin)] = coin_df['high'] - coin_df['low']
+        x_df['spread_{}'.format(coin)] = coin_df['H'] - coin_df['L']
 
-        x_df[['volumefrom_{}'.format(coin) ,'volumeto_{}'.format(coin)]] = coin_df[['volumefrom' ,'volumeto']]
+        x_df[['volumefrom_{}'.format(coin) ,'volumeto_{}'.format(coin)]] = coin_df[['BV' ,'V']]
 
         normal_len = 5
 
         x_df = (x_df - x_df.rolling(window= normal_len, min_periods= normal_len).mean())\
                /x_df.rolling(window=normal_len, min_periods=normal_len).std()
 
-        ret_df = coin_df['close'].pct_change()
+        ret_df = coin_df['C'].pct_change()
 
         x_df['return_{}'.format(coin)] = ret_df
 
@@ -106,26 +98,18 @@ def preds_to_weights(pred_df):
 
     return out
 
-def trade_on_weights(weights):
+def trade_on_weights(bit1, bit2, weights):
 
     '''
+    :param bit1: bittrex object of v1.1
+    :param bit2: bittrex object of v2
     :param weights: dictionary of desired portfolio allocation, keys are coin tickers, values are floats between 0 and 1
     :return: enacts the trades
     '''
 
-    api_key = 'c2402b7f906b4d82b97ca0561d4725ba'
-    secret_key = '0bfb77b4b204453eba27c95f2e124e91'
-
-    bit2 = Bittrex(api_key=api_key, api_secret=secret_key, api_version='v2.0')
-
-    bit1 = Bittrex(api_key=api_key, api_secret=secret_key, api_version='v1.1')
-
     # Only ever trade with half of available funds
 
     trade_BTC_bal = 0.5 * (bit1.get_balance('BTC'))['result']['Available']
-
-    now = time.ctime(int(time.time()))
-    print("________________" + str(now) + "________________")
 
     # Loop through keys
 
@@ -179,16 +163,29 @@ def trade_on_weights(weights):
 
 def run_VARMAX():
 
-    X_df = get_last_hour_data(coins = ['ETH', 'XRP', 'LTC', 'DASH', 'XMR'])
+    api_key = 'c2402b7f906b4d82b97ca0561d4725ba'
+    secret_key = '0bfb77b4b204453eba27c95f2e124e91'
+
+    bit2 = Bittrex(api_key=api_key, api_secret=secret_key, api_version='v2.0')
+
+    bit1 = Bittrex(api_key=api_key, api_secret=secret_key, api_version='v1.1')
+
+    X_df = get_recent_data(bit2, coins = ['ETH', 'XRP', 'LTC', 'DASH', 'XMR'], freq = 'hour')
     pred_df = train_run_VAR(X_df)
     weights = preds_to_weights(pred_df)
-    trade_on_weights(weights)
+    trade_on_weights(bit1, bit2,weights)
 
 
-starttime=time.time()
 while True:
-    #run every hour
-    delay_seconds = 3600.0
-    run_VARMAX()
-    print("________________" + 'End of cycle' + "________________")
-    time.sleep(delay_seconds - ((time.time() - starttime) % delay_seconds))
+    try:
+        # delay until 5 minutes past the hour
+        t = datetime.datetime.today()
+        future = datetime.datetime(t.year, t.month, t.day, (t.hour + 1) % 24, 5)
+        time.sleep((future - t).seconds)
+        now = time.ctime(int(time.time()))
+        print("________________" + str(now) + "________________")
+        run_VARMAX()
+        print("________________" + 'End of cycle' + "________________")
+    except:
+        pass
+
