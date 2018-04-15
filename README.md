@@ -17,8 +17,8 @@ All code written in Python 2.7.
 
 ## Installing Packages
 
-To install a fund specific package, run the following command while in your virtualenv and in the cloned repo dir:
+To install a fund specific package, run the following command while in your virtualenv:
 
 ```
-(virtualenv) Computer_name:Tridens username$ pip install <package> -f Packages
+pip install <package> -f https://github.com/<github_username>/Tridens.git
 ```
