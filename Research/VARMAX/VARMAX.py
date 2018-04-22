@@ -9,7 +9,6 @@ import time
 from Execution.Bittrex.bittrex import Bittrex
 
 def get_recent_data(bit2, coins = ['ETH', 'XRP', 'LTC', 'DASH', 'XMR'], freq = 'hour'):
-
     '''
     :param bit2: bittrex object of v2
     :param coins: list of coin tickers of interest
@@ -55,7 +54,6 @@ def get_recent_data(bit2, coins = ['ETH', 'XRP', 'LTC', 'DASH', 'XMR'], freq = '
     return X_df
 
 def train_run_VAR(X_df):
-
     '''
     :param X_df: recent hourly data from
     :return: one line datatframe of predictions for returns of next dataframe
@@ -78,7 +76,6 @@ def train_run_VAR(X_df):
     return pred_df
 
 def preds_to_weights(pred_df):
-
     '''
     :param pred_df: one row dictionary of expected returns for next hour
     :return:
@@ -98,7 +95,6 @@ def preds_to_weights(pred_df):
     return out
 
 def trade_on_weights(bit1, bit2, weights):
-
     '''
     :param bit1: bittrex object of v1.1
     :param bit2: bittrex object of v2
@@ -161,7 +157,6 @@ def trade_on_weights(bit1, bit2, weights):
                 print(bit1.buy_limit(market=market, quantity=buy_amount, rate=last_rate))
 
 def run_VARMAX():
-
     api_key = 'c2402b7f906b4d82b97ca0561d4725ba'
     secret_key = '0bfb77b4b204453eba27c95f2e124e91'
 
@@ -173,7 +168,6 @@ def run_VARMAX():
     pred_df = train_run_VAR(X_df)
     weights = preds_to_weights(pred_df)
     trade_on_weights(bit1, bit2,weights)
-
 
 while True:
     try:
@@ -187,4 +181,3 @@ while True:
         print("________________" + 'End of cycle' + "________________")
     except:
         pass
-
