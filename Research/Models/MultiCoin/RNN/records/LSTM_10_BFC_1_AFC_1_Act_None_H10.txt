@@ -1,7 +1,0 @@
-LSTM_10_BFC_1_AFC_1_Act_None 
-LSTM_10_BFC_1_AFC_1_Act_None_H10 
-Num_Epochs = 97
-Hidden_Size = 10
-Optimizer = Adam
-Loss = 0.25017687613882345
-Time spent = 430.7896320819855

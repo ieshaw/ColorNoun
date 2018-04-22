@@ -1,0 +1,11 @@
+{
+"bittrex":{
+  "key": "c2402b7f906b4d82b97ca0561d4725ba",
+  "secret": "0bfb77b4b204453eba27c95f2e124e91"
+},
+"bittrex_ro":
+{
+  "key": "4efc766671a542d48d675339cae63fd7",
+  "secret": "8dad40d4896c4dc2be1fa25c1dc78123"
+}
+}

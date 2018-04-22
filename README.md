@@ -13,7 +13,7 @@
 
 ## Code Notes
 
-All code written in Python 2.7.
+All code written in Python 3.5.
 
 ## Installing Packages
 

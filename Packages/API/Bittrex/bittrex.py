@@ -744,9 +744,6 @@ class Bittrex(object):
                    T: '2016-04-09T00:00:00',
                    BV: 1012.63286332 }]
             }
-        : tick_interval: “oneMin”, “fiveMin”, “thirtyMin”, “hour”, “day”
-        :return: Available tick candles in JSON
-        :rtype: dict
         """
 
         return self._api_query(path_dict={
