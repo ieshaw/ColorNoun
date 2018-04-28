@@ -44,7 +44,7 @@ def run_index():
 	key_name = 'bittrex_ro'
 	bit1, bit2 = helper.instantiate_bittrex_objects(key_name,key_json_path)
 	weights = get_index_weights(bit1)
-	helper.trade_on_weights(bit1, bit2,weights)
+	helper.trade_on_weights(weights,bit1)
 
 print('Rebalancing Index Fund')
 run_index()

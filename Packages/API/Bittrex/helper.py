@@ -76,56 +76,109 @@ def get_portfolio_worth_in_BTC(bit1):
 	BTC_val += comb_df.eval('Balance*Last').sum()
 	return BTC_val
 
-def trade_on_weights(bit1, bit2, weights,trade_basement_perc=1):
+def plan_trades(weights,bit1,portfolio_trade_basement=2):
 	'''
-	This function changes the portfolio allocation to the specified proportional weights.
-	This uses limit orders at the most recent recorded transaction price.
-	Bittrex	does not support market orders.
+	This function takes in desired weights for portfolio and plane the trades.
+	The trades are filtered to currencies on Bittrex with a BTC pair and
+		above a trade basement which is either the Bittrex minumim trade or
+		the specified portfolio trade basement.
+	The target distribution is chacked and modified if need be to not trade
+		beyond portfolio worth.
 
-	:param bit1: bittrex object of v1.1
-	:param bit2: bittrex object of v2
-	:param weights: dictionary of desired portfolio allocation, keys are coin tickers, values are floats between 0 and 1
+	param weights: Dictionary of weights with Currency_Ticker:0.XX pairs.
+	param portfoli_trade_basement: the minimum trade size in percentage points of 
+		portfolio size.
+	param bit1: a bittrex object of version 1.1
+	return: pandas dateaframe, index is currency tickers, 
+		Columns Last (most recent price, float), Curr_Dist(float, [0,1]),
+			Target_Dist(float,[0,1]),Trade_Perc(float,[0,1]),
+			Trade_Amt (in BTC,float)
 	'''
-	trade_BTC_bal = get_portfolio_worth_in_BTC(bit1) 
-	#only trade if trade casues trade_basement_perc% difference in holdings
-	#this is to avoind paying transaction fees on small changes
-	min_trade = 0.01*trade_basement_perc*trade_BTC_bal
-	# Loop through keys
-	for coin in weights:
+	portfolio_trade_basement /= 100.0
+	#Get portfolio balance by currency
+	balance_df = pd.DataFrame(bit1.get_balances()['result'])
+	#Get amount of BTC
+	BTC_bal = balance_df.loc[balance_df.Currency == 'BTC','Balance'].values[0]
+	#Get the last transacted price by Market
+	sum_df = pd.DataFrame(bit1.get_market_summaries()['result'])
+	sum_df['BaseCurrency'] = sum_df.MarketName.apply(lambda x: x.split('-')[0])
+	#Only transact in BTC base markets
+	sum_df = sum_df.loc[(sum_df.BaseCurrency == 'BTC')].copy()
+	sum_df['Currency'] = sum_df.MarketName.apply(lambda x: x.split('-')[-1])
+	#Merge the two tables
+	comb_df = balance_df.merge(sum_df,on='Currency')
+	#keep only necessary columns
+	comb_df = comb_df[['Balance','Last','Currency']].copy()
+	#Get the amount in BTC by currency
+	comb_df.eval('Balance_BTC = Balance * Last', inplace=True)
+	#Find total portfolio value in BTC
+	BTC_value = BTC_bal + comb_df.Balance_BTC.sum()
+	#Set Trade basement as max of desired percentage of portfolio or 
+	#the minimum trade on Bittrex
+	portfolio_trade_basement = max(portfolio_trade_basement,0.001/BTC_value)
+	#Find current distribution of portfolio
+	comb_df['Curr_Dist'] = comb_df.Balance_BTC/BTC_value
+	#Make the Currencies the index
+	comb_df.set_index('Currency', inplace=True)
+	#Log Target Distribution
+	target_series = pd.Series(weights,name='Target_Dist')
+	comb_df = comb_df.join(target_series, how='left')
+	#fill in any undescribed coins with 0
+	comb_df['Target_Dist'].fillna(0,inplace=True)
+	#Check to make sure the target distribution is less than 1.
+	#If not, scale appropriately
+	dist_sum = (BTC_bal/BTC_value + comb_df.Target_Dist.sum())
+	if dist_sum > 1:
+		comb_df.Target_Dist /= dist_sum 
+	#Find the Trade percentage of portfolio for each currency
+	comb_df.eval('Trade_Perc = Target_Dist - Curr_Dist',inplace=True)
+	#Drop trade if less than the portfolio basement
+	trade_df = comb_df.loc[comb_df.Trade_Perc.abs() > portfolio_trade_basement].copy()
+	#Create the Trade Amount
+	trade_df['Trade_Amt'] = trade_df.Trade_Perc * BTC_value
+	#Trim unecessary columns
+	trade_df = trade_df[['Last','Curr_Dist','Target_Dist','Trade_Perc','Trade_Amt']].copy()
+	return trade_df
+
+def execute_trades(trade_df,bit1):
+	'''
+	This functions executes specified trades throught limit orders at most recent price.
+	Will change to market orders when Bittrex enables that option.
+
+	param bit1: a bittrex object of version 1.1
+	param trade_df: pandas dateaframe, index is currency tickers, 
+		Columns Last (most recent price, float), Curr_Dist(float, [0,1]),
+			Target_Dist(float,[0,1]),Trade_Perc(float,[0,1]),
+			Trade_Amt (in BTC,float)
+	'''
+	for coin,row in trade_df.iterrows():
 		market = 'BTC-{}'.format(coin)
-		#check if currency is traded in bittrex
-		if market not in bit1.list_markets_by_currency(coin):
-			print('{} is not traded on Bittrex.'.format(market))
-			#If not traded on bittrex, forget about it
-			continue
-		#Find then current going rate of the coin
-		last_rate = float(bit2.get_latest_candle(market=market, tick_interval='oneMin')['result'][0]['L'])
-		#cancel any open orders
-#		open_orders = bit1.get_open_orders(market='BTC-{}'.format(coin))['result']
-#		if open_orders:
-#			for order in open_orders:
-#				bit1.cancel(uuid=order['OrderUuid'])
-		#find balance of the currency in question
-		coin_avail = (bit1.get_balance(coin))['result']['Available']
-		if coin_avail is None:
-			coin_avail = 0
-		#find the difference between our amount and the desried amount
-		desired_amount = weights[coin] * trade_BTC_bal / last_rate
-		trade_amount = desired_amount - coin_avail
-		print('{}.Current Position: {:.2E}. Desired Position: {:.2E}.'.format(
-			coin,coin_avail,desired_amount))
-		trade_size_BTC = abs(trade_amount*last_rate)
-		if trade_size_BTC > min_trade: 
-			# if Sell
-			if trade_amount < -0.0001:
-				print('Selling {} of {}'.format(abs(trade_amount), coin))
-#				print(bit1.sell_limit(market=market, quantity=abs(trade_amount)
-#					, rate=last_rate))
-			#if Buy
-			elif trade_amount > 0.001: 
-				print('Buying {} of {}'.format(trade_amount, coin))
-#				print(bit1.buy_limit(market=market,
-#					 quantity=trade_amount, rate=last_rate))
-		elif abs(trade_amount) > 0:
-			print('Not trading. {:2E} BTC worth of {} is below {}% of portfolio[{:2E} BTC].'.format(
-		trade_size_BTC,coin,trade_basement_perc,min_trade))
+		#close any open orders
+		open_orders = bit1.get_open_orders(market=market)['result']
+		if open_orders:
+			print('Cancelling open orders for {}.'.format(coin))
+			for order in open_orders:
+				bit1.cancel(uuid=order['OrderUuid'])
+		if row.Trade_Amt > 0:
+			print('Buying {} of {}'.format(row.Trade_Amt, coin))
+			print(bit1.buy_limit(market=market,
+					 quantity=row.Trade_Amt, rate=row.Last))
+		elif row.Trade_Amt < 0:	
+			print('Selling {} of {}'.format(abs(row.Trade_Amt), coin))
+			print(bit1.sell_limit(market=market, quantity=abs(row.Trade_Amt)
+					, rate=row.Last))
+
+def trade_on_weights(weights,bit1,portfolio_trade_basement=1):
+	'''
+	This function executes trades for a portfolio toward target weights.
+
+	param weights: Dictionary of weights with Currency_Ticker:0.XX pairs.
+	param portfoli_trade_basement: the minimum trade size in percentage points of 
+		portfolio size.
+	param bit1: a bittrex object of version 1.1
+	'''
+	trade_df = plan_trades(weights,bit1,2)
+	print('--------------------Trade Plan-----------------')
+	print(trade_df)
+	print('----------------------------------------------')
+	execute_trades(trade_df,bit1)
