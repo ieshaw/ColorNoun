@@ -15,10 +15,11 @@
 
 All code written in Python 3.5.
 
-## Installing Packages
+## Running Code
 
-To install a fund specific package, run the following command while in your virtualenv:
+All code is written to import local modules. To run a set of code, execute from the Tridens home directory
 
 ```
-pip install <package> -f https://github.com/<github_username>/Tridens.git
+Tridens name$ python -m Path.to.script.py
+
 ```
