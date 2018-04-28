@@ -1,4 +1,3 @@
-
 __author__ = 'Ian'
 
 from Packages.API.Bittrex import helper
