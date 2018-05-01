@@ -13,7 +13,7 @@
 
 ## Code Notes
 
-All code written in Python 3.5.
+All code written in Python 3.5. Following PEP8 guidlines fro style.
 
 ## Running Code
 
@@ -23,8 +23,3 @@ All code is written to import local modules. To run a set of code, execute from 
 Tridens name$ python -m Path.to.script.py
 
 ```
-
-## Outside Packages Needed
-- pandas
-- coinmarketcap
-- twilio
