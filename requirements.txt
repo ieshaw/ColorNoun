@@ -1,3 +1,4 @@
-pandas
 coinmarketcap
+pandas
+statsmodels
 twilio
