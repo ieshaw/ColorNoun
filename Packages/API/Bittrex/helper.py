@@ -48,10 +48,10 @@ def get_recent_data(bit2, coins = ['ETH', 'XRP', 'LTC', 'DASH', 'XMR'], freq = '
 		x_df['return_{}'.format(coin)] = ret_df
 		x_df = x_df.dropna()
 		if i == 0:
-		    X_df = x_df
-		    i = 1
+			X_df = x_df
+			i = 1
 		else:
-		    X_df = X_df.join(x_df, how = 'inner')
+			X_df = X_df.join(x_df, how = 'inner')
 	return X_df
 
 def get_portfolio_worth_in_BTC(bit1):
@@ -135,9 +135,14 @@ def plan_trades(weights,bit1,portfolio_trade_basement=2):
 	#Drop trade if less than the portfolio basement
 	trade_df = comb_df.loc[comb_df.Trade_Perc.abs() > portfolio_trade_basement].copy()
 	#Create the Trade Amount
-	trade_df['Trade_Amt'] = trade_df.Trade_Perc * BTC_value
+	trade_df['Trade_Amt_BTC'] = trade_df.Trade_Perc * BTC_value
+	#The Trade amount in the Coin
+	trade_df.eval('Trade_Amt_Coin = Trade_Amt_BTC/Last',inplace=True)
+	#Rename column
+	trade_df['Last_Price_BTC'] = trade_df['Last']
 	#Trim unecessary columns
-	trade_df = trade_df[['Last','Curr_Dist','Target_Dist','Trade_Perc','Trade_Amt']].copy()
+	trade_df = trade_df[['Last_Price_BTC','Curr_Dist','Target_Dist','Trade_Perc',
+			     'Trade_Amt_BTC', 'Trade_Amt_Coin']].copy()
 	return trade_df
 
 def execute_trades(trade_df,bit1):
@@ -159,14 +164,14 @@ def execute_trades(trade_df,bit1):
 			print('Cancelling open orders for {}.'.format(coin))
 			for order in open_orders:
 				bit1.cancel(uuid=order['OrderUuid'])
-		if row.Trade_Amt > 0:
-			print('Buying {} of {}'.format(row.Trade_Amt, coin))
+		if row.Trade_Amt_Coin > 0:
+			print('Buying {} of {}'.format(row.Trade_Amt_Coin, coin))
 			print(bit1.buy_limit(market=market,
-					 quantity=row.Trade_Amt, rate=row.Last))
-		elif row.Trade_Amt < 0:	
-			print('Selling {} of {}'.format(abs(row.Trade_Amt), coin))
-			print(bit1.sell_limit(market=market, quantity=abs(row.Trade_Amt)
-					, rate=row.Last))
+					 quantity=row.Trade_Amt_Coin, rate=row.Last_Price_BTC))
+		elif row.Trade_Amt_Coin < 0:
+			print('Selling {} of {}'.format(abs(row.Trade_Amt_Coin), coin))
+			print(bit1.sell_limit(market=market, quantity=abs(row.Trade_Amt_Coin)
+					, rate=row.Last_Price_BTC))
 
 def trade_on_weights(weights,bit1,portfolio_trade_basement=1):
 	'''

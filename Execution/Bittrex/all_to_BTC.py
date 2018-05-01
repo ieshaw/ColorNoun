@@ -7,8 +7,6 @@ from statsmodels.tsa.api import VAR
 import time
 from Execution.Bittrex.bittrex import Bittrex
 
-api_key = 'eb49ce17b2ea4a34abd8f6b011513979'
-secret_key = '3829ff6a2e64423a8d7f928329980d13'
 
 bit1 = Bittrex(api_key=api_key, api_secret=secret_key, api_version='v1.1')
 bit2 = Bittrex(api_key=api_key, api_secret=secret_key, api_version='v2.0')

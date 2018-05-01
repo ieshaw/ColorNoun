@@ -1,6 +1,7 @@
 __author__ = 'Ian'
 
 from Packages.API.Bittrex import helper
+from Packages.API.Helper.helper import send_text
 import pandas as pd
 from coinmarketcap import Market
 
@@ -29,7 +30,7 @@ def get_index_weights(bit1):
 	#rebalance to reflect current weight distribution
 	market_df['index_weight'] = market_df['index_weight']/market_df['index_weight'].sum()
 	market_df['index_weight'].fillna(0,inplace=True)
-	#Since Base currency is BTC, do not trade 
+	#Since Base currency is BTC, do not trade
 	market_df = market_df.loc[market_df['symbol'] != 'BTC'].copy()
 	#create dictionary of market and portfolio weights
 	weight_dict = dict(zip(market_df.symbol,market_df.index_weight))
@@ -40,11 +41,12 @@ def run_index():
 	This function gathers the index weights and instructs bittrex to move our portfolio
 	to those weights.
 	'''
-	key_json_path = '/Users/ianshaw/.goods/exchange_keys.json'
+	key_json_path = '.exchange_keys.json'
 	key_name = 'bittrex_ro'
 	bit1, bit2 = helper.instantiate_bittrex_objects(key_name,key_json_path)
 	weights = get_index_weights(bit1)
 	helper.trade_on_weights(weights,bit1)
+	send_text('Rebalancing Index Fund')
 
 print('Rebalancing Index Fund')
 run_index()
