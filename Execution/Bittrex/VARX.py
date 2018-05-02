@@ -20,6 +20,8 @@ def train_run_VAR(X_df):
 
 def preds_to_weights(pred_df):
     '''
+    Set Weights, never trade more than half of portfolio to ensure
+        enough BTC to trade.
     :param pred_df: data fream of columns 'return_Ticker'
     :return: one row dictionary of expected returns for next hour
     '''
@@ -28,11 +30,11 @@ def preds_to_weights(pred_df):
     out = {}
     for column in pred_df.columns:
         coin = column.split('_')[1]
-        out[coin] = float(pred_df[column].values)/ sum
+        out[coin] = 0.5 * float(pred_df[column].values)/ sum
     return out
 
 key_json_path = '.exchange_keys.json'
-key_name = 'bittrex_beta_ro'
+key_name = 'bittrex_alpha_ro'
 bit1, bit2 = helper.instantiate_bittrex_objects(key_name, key_json_path)
 X_df = helper.get_recent_data(bit2, coins = ['ETH', 'XRP', 'LTC', 'NEOS', 'ADA'], freq = 'hour')
 pred_df = train_run_VAR(X_df)

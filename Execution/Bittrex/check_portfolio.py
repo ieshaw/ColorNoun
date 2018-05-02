@@ -24,5 +24,5 @@ alpha_original_BTC = 0.03503836
 alpha_original_USD = 317
 alpha_str = fund_return(bit1,bit2,alpha_original_BTC,alpha_original_USD,'Alpha')
 
-print(alpha_str + '\n' + beta_str)
-#send_email(alpha_str + '\n' + beta_str)
+#print(alpha_str + '\n' + beta_str)
+send_email(alpha_str + '\n' + beta_str, toaddrs=['ian@colornoun.capital'])
