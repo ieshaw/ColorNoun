@@ -21,5 +21,4 @@ All code is written to import local modules. To run a set of code, execute from 
 
 ```
 Tridens name$ python -m Path.to.script.py
-
 ```

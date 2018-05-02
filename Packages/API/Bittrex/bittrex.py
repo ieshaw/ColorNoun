@@ -779,3 +779,8 @@ class Bittrex(object):
         }, options={
             'marketName': market, 'tickInterval': tick_interval
         }, protection=PROTECTION_PUB)
+
+    def get_btc_price(self):
+        return self._api_query(path_dict={
+            API_V2_0: '/pub/currencies/GetBTCPrice'
+        }, protection=PROTECTION_PUB)

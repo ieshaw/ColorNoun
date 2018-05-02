@@ -32,7 +32,7 @@ def preds_to_weights(pred_df):
     return out
 
 key_json_path = '.exchange_keys.json'
-key_name = 'bittrex_ro'
+key_name = 'bittrex_beta_ro'
 bit1, bit2 = helper.instantiate_bittrex_objects(key_name, key_json_path)
 X_df = helper.get_recent_data(bit2, coins = ['ETH', 'XRP', 'LTC', 'NEOS', 'ADA'], freq = 'hour')
 pred_df = train_run_VAR(X_df)

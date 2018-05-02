@@ -23,4 +23,17 @@ def send_text(msg):
     # account to send SMS to any phone number
     client.messages.create(to="+19518521157",
                    from_="+17608915341",
-                   body="Rebalancing Index Fund")
+                   body=msg)
+
+def send_email(msg,
+               subj='Portfolio Health',
+               toaddrs=['ian@colornoun.capital','zac@colornoun.capital']):
+    import smtplib
+    fromaddr = 'info@colornoun.capital'
+    # Credentials
+    password = 'info12345'
+    # put your host and port here
+    s = smtplib.SMTP_SSL('server200.web-hosting.com:465')
+    s.login(fromaddr, password)
+    s.sendmail(fromaddr, toaddrs, msg)
+    s.quit()
