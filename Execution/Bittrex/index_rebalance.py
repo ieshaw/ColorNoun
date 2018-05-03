@@ -42,11 +42,10 @@ def run_index():
     to those weights.
     '''
     key_json_path = '.exchange_keys.json'
-    key_name = 'bittrex_beta_ro'
+    key_name = 'bittrex_beta'
     bit1, bit2 = helper.instantiate_bittrex_objects(key_name,key_json_path)
     weights = get_index_weights(bit1)
-    helper.trade_on_weights(weights,bit1)
-    send_email('Rebalancing Index Fund', subj='Index Fund Rebalance')
+    trade_df = helper.trade_on_weights(weights,bit1)
+    send_email('Rebalancing Index Fund. \n\n Trade Plan. \n\n {}'.format(trade_df), subj='Index Fund Rebalance')
 
-print('Rebalancing Index Fund')
 run_index()

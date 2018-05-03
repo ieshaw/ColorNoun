@@ -1,3 +1,4 @@
 coinmarketcap
 pandas
 statsmodels
+python-binance

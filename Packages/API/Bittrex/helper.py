@@ -189,3 +189,4 @@ def trade_on_weights(weights,bit1,portfolio_trade_basement=1):
     print(trade_df)
     print('----------------------------------------------')
     execute_trades(trade_df,bit1)
+    return trade_df

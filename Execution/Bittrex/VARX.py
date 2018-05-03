@@ -1,5 +1,6 @@
 from Packages.API.Bittrex.bittrex import Bittrex
 from Packages.API.Bittrex import helper
+from Packages.API.Helper.helper import send_email
 import pandas as pd
 from statsmodels.tsa.api import VAR
 
@@ -34,10 +35,10 @@ def preds_to_weights(pred_df):
     return out
 
 key_json_path = '.exchange_keys.json'
-key_name = 'bittrex_alpha_ro'
+key_name = 'bittrex_alpha'
 bit1, bit2 = helper.instantiate_bittrex_objects(key_name, key_json_path)
 X_df = helper.get_recent_data(bit2, coins = ['ETH', 'XRP', 'LTC', 'NEOS', 'ADA'], freq = 'hour')
 pred_df = train_run_VAR(X_df)
 weights_dict = preds_to_weights(pred_df)
-print(weights_dict)
-print(helper.trade_on_weights(weights_dict,bit1))
+trade_df = helper.trade_on_weights(weights_dict,bit1)
+send_email('VARX Trading. \n\n Trade Plan. \n\n {}'.format(trade_df))
