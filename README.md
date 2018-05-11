@@ -1,9 +1,14 @@
-# Tridens Capital Github Repo
+# Color Noun Capital Github Crypto Repo
 
 ## Personnel
 
 * CEO: Ian
 * COO: Zac
+
+## Overview
+We believe that the cryptocurrency market is going to grow; thus we maintain index funds. 
+We also believe that the cryptocurrency market is inneficient, allowing us to profit.
+
 
 ## Repo Organization
 
