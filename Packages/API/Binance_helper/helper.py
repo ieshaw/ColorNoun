@@ -1,3 +1,9 @@
+'''
+Using the package from
+https://github.com/sammchardy/python-binance
+'''
+
+
 import pandas as pd
 
 def instantiate_api_object(public_key, private_key):

@@ -1,0 +1,37 @@
+{
+  "Bittrex_Beta_Large": {
+    "exchange": "Bittrex",
+    "live": {
+      "public": "e701aa0f7b69400ba4c79d23673834a8",
+      "private": "bae11fd5feb542b2a29c6127d117d6f9"
+    },
+    "ro": {
+      "public": "4efc766671a542d48d675339cae63fd7",
+      "private": "8dad40d4896c4dc2be1fa25c1dc78123"
+    }
+  },
+  "Bittrex_Beta_Small": {
+    "exchange": "Bittrex",
+    "live": {
+      "public": "78dce55a2cde44efb7ad32359963de98",
+      "private": "4956bb98cbed49a8bf320147f961eea6"
+    },
+    "ro": {
+      "public": "ac6d1abd2a1d4c969858f7c8513a92cd",
+      "private": "a876f609b8c04176b30d34e3c2942a84"
+    }
+  },
+  "Binance_Alpha":{
+    "exchange":"Binance",
+    "live":
+    {
+      "public": "0ckea4D1QqW9yaE4DlfV9Eqo0TnlQLtH2u1hJ3Zm4JDVIgb3M5rLRYxlzhDtHUBL",
+    "private": "7wQQeiLz0UcnzHADqc9q2eeerncNWJHXRNbsLiLdcsAXG2c3ROPGIiHzjwwz5W70"
+    },
+    "ro":
+    {
+    "public": "In8IQ2340nMouWCbFGGbEWIrA7zzjpeHhY311Waa58j9oRkooTx0F1Gfcrk3jQpo",
+    "private": "kL1o305U929Ank6LU9RCZGipxbgt63O6m4CiPR05PfMaHJPttOojvaMSS9k8hjxv"
+    }
+  }
+}

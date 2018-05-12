@@ -1,3 +1,8 @@
+'''
+Using the package from
+https://github.com/ericsomdahl/python-bittrex
+'''
+
 import pandas as pd
 
 def instantiate_api_object(public_key, private_key, api_version='v1.1'):

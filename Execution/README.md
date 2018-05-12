@@ -1,4 +1,4 @@
-# Tridens Execution Branch
+# Color Noun Execution Branch
 
 ## Website
 
@@ -22,7 +22,7 @@ current strategies.
 
 ### Strategy Overviews
 
-This section is meant to convey a high level understandign of each strategy.
+This section is meant to convey a high level understanding of each strategy.
 
 #### Large Cap Index
 
@@ -33,12 +33,12 @@ proportional to market capitalization.
 
 Similar to the Large Cap Index, this is a index with daily rebalancing weighting exposure to coins 
 proportional to market capitalization. The difference is that it only weighs in on coins outside the 
-top teir. As of now, this means that the weghting starts with the 8th ranked coin by market cap. 
+top teir. As of now, this means that the weighting starts with the 8th ranked coin by market cap. 
 The hope is to extend exposure deeper into the cryptocurrency market.
 
 #### Alpha VARX
 
-This is a alpha strategy meant to capture regressive depednedncies between coins and their technical aspect 
+This is a alpha strategy meant to capture regressive dependencies between coins and their technical aspect 
 (spread, volume, returns). 
 
 #### Alpha Exchange Arbitrage
