@@ -46,10 +46,26 @@ def get_exchange_df(api_object):
 def execute_trades(api_object,trade_df):
     '''
     :param api_object: binance api object
-    :param trade_df:
-    :return: pandas dataframe of trade request json responses from exchange API
+    param trade_df: pandas DataFrame with index ticker, columns Market (string), price(float, in BTC),
+        Curr_Dist(float, [0,1]), Target_Dist(float,[0,1]),Trade_Perc(float,[-1,1]), Trade_Amt (in BTC,float),
+        Trade_Amt_Coin (float, in the target currency)
     '''
-    return 1
+    for coin,row in trade_df.iterrows():
+        try:
+            #close any open orders
+            open_orders = api_object.get_open_orders(symbol=row.market)
+            if open_orders:
+                print('Cancelling open orders for {}.'.format(coin))
+                for order in open_orders:
+                    api_object.cancel_order(symbol=row.market, orderId=order['orderId'])
+            if row.Trade_Amt_Coin > 0:
+                print('Buying {} of {}'.format(row.Trade_Amt_Coin, coin))
+                print(api_object.order_market_buy(symbol=row.market,quantity=row.Trade_Amt_Coin))
+            elif row.Trade_Amt_Coin < 0:
+                print('Selling {} of {}'.format(abs(row.Trade_Amt_Coin), coin))
+                print(api_object.order_market_sell(symbol=row.market,quantity=abs(row.Trade_Amt_Coin)))
+        except:
+            None
 
 def get_recent_data(api_object):
     '''

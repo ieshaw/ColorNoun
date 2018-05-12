@@ -48,26 +48,24 @@ def execute_trades(api_object, trade_df):
     Will change to market orders when Bittrex enables that option.
 
     param api_object: a bittrex object of version 1.1
-    param trade_df: pandas dateaframe, index is currency tickers,
-        Columns Last (most recent price, float), Curr_Dist(float, [0,1]),
-            Target_Dist(float,[0,1]),Trade_Perc(float,[0,1]),
-            Trade_Amt (in BTC,float)
+    param trade_df: pandas DataFrame with index ticker, columns market (string), price(float, in BTC),
+        Curr_Dist(float, [0,1]), Target_Dist(float,[0,1]),Trade_Perc(float,[-1,1]), Trade_Amt (in BTC,float),
+        Trade_Amt_Coin (float, in the target currency)
     '''
     for coin,row in trade_df.iterrows():
-        market = 'BTC-{}'.format(coin)
         #close any open orders
-        open_orders = api_object.get_open_orders(market=market)['result']
+        open_orders = api_object.get_open_orders(market=row.market)['result']
         if open_orders:
             print('Cancelling open orders for {}.'.format(coin))
             for order in open_orders:
                 api_object.cancel(uuid=order['OrderUuid'])
         if row.Trade_Amt_Coin > 0:
             print('Buying {} of {}'.format(row.Trade_Amt_Coin, coin))
-            print(api_object.buy_limit(market=market,
+            print(api_object.buy_limit(market=row.market,
                      quantity=row.Trade_Amt_Coin, rate=row.price))
         elif row.Trade_Amt_Coin < 0:
             print('Selling {} of {}'.format(abs(row.Trade_Amt_Coin), coin))
-            print(api_object.sell_limit(market=market, quantity=abs(row.Trade_Amt_Coin)
+            print(api_object.sell_limit(market=row.market, quantity=abs(row.Trade_Amt_Coin)
                     , rate=row.price))
 
 def get_recent_data(api_object):

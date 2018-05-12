@@ -25,5 +25,5 @@ All code written in Python 3.5. Following PEP8 guidlines fro style.
 All code is written to import local modules. To run a set of code, execute from the Tridens home directory
 
 ```
-Tridens name$ python -m Path.to.script.py
+ColorNoun name$ python -m Path.to.script.py
 ```
