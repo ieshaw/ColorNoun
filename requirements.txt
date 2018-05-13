@@ -1,5 +1,4 @@
 coinmarketcap
 pandas
-statsmodels
 python-binance
 python-bittrex

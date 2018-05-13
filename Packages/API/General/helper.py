@@ -38,6 +38,7 @@ def send_email(msg,
     s.login(fromaddr, password)
     s.sendmail(fromaddr, toaddrs, msg)
     s.quit()
+
 '''
 These are the logic functions of planning trades
 '''
@@ -150,18 +151,17 @@ def get_exchange_df(exchange, api_object):
     exchange_df = get_exchange_df(api_object)
     return expand_exchange_df(exchange_df)
 
-def get_portfolio_val(exchange,public_key, private_key):
+def get_portfolio_val_BTC(exchange,public_key, private_key):
     '''
     :param exchange: string, exchange name. Binance or Bittrex
-    :param public_key:
-    :param private_key:
-    :return: dictionary {'BTC':float, 'USD':float}
+    :param public_key: string
+    :param private_key: string
+    :return: float
     '''
-    exchange_df = get_exchange_df(exchange,public_key, private_key)
-    val_dict = {}
-    val_dict['BTC'] = exchange_df.amt_BTC.sum()
+    api_object = instantiate_api_object(exchange, public_key, private_key)
+    exchange_df = get_exchange_df(exchange, api_object)
+    return exchange_df.amt_BTC.sum()
 
-    return val_dict
 '''
 These are end to end functions. taking a key json and a weights dictionary and
 executing the trades to move the portfolio towards those weights.
@@ -197,13 +197,14 @@ def trade_on_weights(exchange,public_key, private_key, weights_dict,
     :param portfolio_trade_basement: float in [0,1]. The minimum trade size in percentage points of
         portfolio size.
     :param min_BTC_prop: float in [0,1]. The minimum about of BTC to be in the portfolio.
-    :param exchange_min_trade_BTC: floatm the minimum trade size of the exchange in BTC. Usually 0.001.
+    :param exchange_min_trade_BTC: float the minimum trade size of the exchange in BTC. Usually 0.001.
     :return:
     '''
     api_object = instantiate_api_object(exchange, public_key, private_key)
     exchange_df = get_exchange_df(exchange, api_object)
-    trade_df = plan_trades(exchange_df, weights_dict, portfolio_trade_basement=0.01, min_BTC_prop=0.1,
-                           exchange_min_trade_BTC=0.001)
+    trade_df = plan_trades(exchange_df, weights_dict, portfolio_trade_basement=portfolio_trade_basement,
+                           min_BTC_prop=min_BTC_prop,
+                           exchange_min_trade_BTC=exchange_min_trade_BTC)
     trade_df = execute_trades(exchange, api_object, trade_df)
     return trade_df
 

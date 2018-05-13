@@ -72,15 +72,3 @@ def execute_trades(api_object, trade_df):
             print('Selling {} of {}'.format(abs(row.Trade_Amt_Coin), coin))
             print(api_object.sell_limit(market=row.market, quantity=abs(row.Trade_Amt_Coin)
                     , rate=row.price))
-
-def get_recent_data(api_object):
-    ''' 
-    :param api_object: Bittrex api object
-    :param coins: list of coin tickers of interest
-    :param freq: frequency of ticks
-            can be: oneMin,fiveMin,thirtyMin,hour,day
-    :return: pandas dataframe with index datetime and columns Coin_(info) of floats;
-    with Price, Volume
-    '''
-    return 1
-

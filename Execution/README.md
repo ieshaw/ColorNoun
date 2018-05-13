@@ -1,5 +1,42 @@
 # Color Noun Execution Branch
 
+## EC2 Configuration
+
+### Installing paackages
+
+To install necessary packages run the commands
+```angular2html
+sudo yum install gcc
+pip install urllib3 --upgrade --user
+pip install -r requirements.txt --user
+```
+
+### Crontab Setup
+
+On the intantiation of EC2 instance execute the command `crontab -e` and provide the following commands.
+
+```angular2html
+*/5 * * * * python -m Execution.Trading.arb.py
+2 * * * * python -m Execution.Trading.check_portfolio.py
+3 8 * * * * python -m Execution.Trading.large_cap_index_rebalace.py
+```
+
+### Screen Setting
+
+To ensure that the cron tab operates properly set a screen
+
+```angular2html
+screen
+```
+
+Then detach 
+
+```angular2html
+ctrl+a ctrl+d
+```
+
+Before detaching the loacal machine from the instance.
+
 ## Website
 
 This houses any python code necessary for rendering the website.

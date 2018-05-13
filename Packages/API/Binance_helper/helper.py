@@ -3,7 +3,6 @@ Using the package from
 https://github.com/sammchardy/python-binance
 '''
 
-
 import pandas as pd
 
 def instantiate_api_object(public_key, private_key):
@@ -21,7 +20,7 @@ def get_exchange_df(api_object):
     :return: pandas dataframe with index ticker (string) and
     columns price(float), market(string, market form TICKERBTC), balance(float, amount available)
     '''
-    exchange_df = pd.DataFrame(api_object.get_account()['balances']).head()
+    exchange_df = pd.DataFrame(api_object.get_account()['balances'])
     price_df = pd.DataFrame(api_object.get_all_tickers())
     #create future row for exchange_df
     BTC_row = {'price': 1, 'symbol': 'BTCBTC', 'ticker':'BTC'}
@@ -60,23 +59,26 @@ def execute_trades(api_object,trade_df):
         try:
             #close any open orders
             open_orders = api_object.get_open_orders(symbol=row.market)
+            market = row.market
+            #Binance only allows certain order sizes by coin
+            trade_amt = round(row.Trade_Amt_Coin, 6)
+            buy = bool(trade_amt > 0)
+            sell = bool(trade_amt < 0)
+            trade_amt = abs(trade_amt)
+            #filter to make sure in tick size increments above min trade size
+            market_lot_size_info = api_object.get_symbol_info(market)['filters'][1]
+            trade_amt -= (trade_amt - float(market_lot_size_info['minQty']))%float(market_lot_size_info['stepSize'])
+            if trade_amt <= 0:
+                continue
             if open_orders:
                 print('Cancelling open orders for {}.'.format(coin))
                 for order in open_orders:
-                    api_object.cancel_order(symbol=row.market, orderId=order['orderId'])
-            if row.Trade_Amt_Coin > 0:
-                print('Buying {} of {}'.format(row.Trade_Amt_Coin, coin))
-                print(api_object.order_market_buy(symbol=row.market,quantity=row.Trade_Amt_Coin))
-            elif row.Trade_Amt_Coin < 0:
-                print('Selling {} of {}'.format(abs(row.Trade_Amt_Coin), coin))
-                print(api_object.order_market_sell(symbol=row.market,quantity=abs(row.Trade_Amt_Coin)))
-        except:
-            None
-
-def get_recent_data(api_object):
-    '''
-    :param api_object: binance api object
-    :return: pandas dataframe with index datetime and columns Coin_(info) of floats;
-    with Price, Volume
-    '''
-    return 1
+                    api_object.cancel_order(symbol=market, orderId=order['orderId'])
+            if buy:
+                print('Buying {} of {}'.format(trade_amt, coin))
+                print(api_object.order_market_buy(symbol=market,quantity=trade_amt))
+            elif sell:
+                print('Selling {} of {}'.format(trade_amt, coin))
+                print(api_object.order_market_sell(symbol=market,quantity=trade_amt))
+        except Exception as e:
+            print(e)
