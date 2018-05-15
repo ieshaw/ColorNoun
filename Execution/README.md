@@ -6,6 +6,9 @@
 
 To install necessary packages run the commands
 ```angular2html
+pip install virtualenvwrapper
+mkvirtualenv ColorNoun
+workon Colornoun
 sudo yum install gcc
 pip install urllib3 --upgrade --user
 pip install -r requirements.txt --user

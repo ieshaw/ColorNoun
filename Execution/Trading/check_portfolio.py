@@ -42,5 +42,5 @@ alpha_str_bit = generate_fund_return_str(fund_name='Arbitrage_Bit', key_list= al
                                key_path=key_path, orig_BTC=0.0322482994705332, orig_USD=277.6278675227832,
                                curr_BTC_val_USD= BTC_val_USD)
 #send email notifying about health
-#send_email(alpha_str_bin + '\n' + alpha_str_bit + '\n' + beta_str, subj='Fund Health')
-print(alpha_str_bin + '\n' + alpha_str_bit + '\n' + beta_str)
+send_email(alpha_str_bin + '\n' + alpha_str_bit + '\n' + beta_str, subj='Fund Health')
+# print(alpha_str_bin + '\n' + alpha_str_bit + '\n' + beta_str)

@@ -21,7 +21,7 @@ api_object = instantiate_api_object(exchange,public_key, private_key)
 binance_df = get_exchange_df(exchange, api_object)[['price']]
 #Compare the prices
 comb_df = bittrex_df.join(binance_df, how='inner', lsuffix='_bittrex', rsuffix='_binance')
-comb_df.eval('space = 1 - price_bittrex/price_binance', inplace=True)
+comb_df.eval('space = 1 - price_binance/price_bittrex', inplace=True)
 comb_df = comb_df.loc[comb_df.space.abs() > 0.007].copy()
 #Buy Binance if lower
 binance_weights_df = comb_df.loc[comb_df.space > 0].copy()
@@ -38,7 +38,7 @@ exchange, public_key, private_key = key_dict['Bittrex']
 bit_trade_df = trade_on_weights(exchange, public_key, private_key, bittrex_weights_dict,
                             min_BTC_prop=0.5)
 #send an email notifying
-# send_email('Executing Arbitrage Play. \n\n Binance Trade Plan. \n\n {}\n\nBinance Trade Plan. \n\n {}'.format(
-#     bin_trade_df, bit_trade_df),subj='Arbitrage Trade Update')
-print('Executing Arbitrage Play. \n\n Binance Trade Plan. \n\n {}\n\n Bittrex Trade Plan. \n\n {}'.format(
-    bin_trade_df, bit_trade_df))
+send_email('Executing Arbitrage Play. \n\n Binance Trade Plan. \n\n {}\n\nBinance Trade Plan. \n\n {}'.format(
+    bin_trade_df, bit_trade_df),subj='Arbitrage Trade Update')
+# print('Executing Arbitrage Play. \n\n Binance Trade Plan. \n\n {}\n\n Bittrex Trade Plan. \n\n {}'.format(
+#     bin_trade_df, bit_trade_df))
