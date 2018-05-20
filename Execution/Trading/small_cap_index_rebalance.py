@@ -5,7 +5,7 @@ weights_dict = small_cap(rank_ceiling=5)
 
 key_path = '.exchange_keys.json'
 key_name = 'Bittrex_Alpha'
-key_status = 'ro'
+key_status = 'live'
 
 exchange, public_key, private_key = key_retriever(key_path,key_name,key_status)
 trade_df = trade_on_weights(exchange, public_key, private_key, weights_dict, min_BTC_prop=0.2)
