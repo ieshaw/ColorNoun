@@ -107,12 +107,28 @@ def get_last_epoch_binance_raw_data(coin,conn):
     :param engine: engine: sqlalchemy engine for colornoun database
     :return last_epoch: int
     '''
-    #Query Database for most recent enty
-    stmt = '''SELECT open_time from {}_binance_raw ORDER BY open_time DESC LIMIT 1'''.format(
-        coin)
-    df = pd.read_sql(stmt,conn)
-    if df.empty:
-        last_epoch = 1500004800000
-    else:
+    try:
+        #Query Database for most recent enty
+        stmt = '''SELECT open_time from {}_binance_raw ORDER BY open_time DESC LIMIT 1'''.format(
+            coin)
+        df = pd.read_sql(stmt,conn)
         last_epoch = df.values[0][0]
+    except:
+        last_epoch = 1500004800000
     return last_epoch
+
+def get_data_gaps(input_df):
+    '''
+    This is meant to find any breaks in the data coverages
+    :param input_df: Binance raw dataframe with column named open_time which are millisecond epoch integers
+        This is the standard form for the Binance API
+    :return: a list of tuples of epochs where data is missing
+    '''
+    df = input_df.copy()
+    df = df.sort_values('open_time', ascending=False)
+    df['diff'] = df.open_time - df.open_time.shift(-1)
+    df['prev'] = df.open_time.shift(-1)
+    df.prev += 60000
+    missing_data = df.loc[df['diff'] > 60000].copy()
+    
+    return list(zip(missing_data.prev.astype(int), missing_data.open_time.astype(int)))
