@@ -14,6 +14,7 @@ def find_sample_period(coins,num_days,start_limit,end_limit):
         missing_df = missing_df.append(pd.read_csv('missing_epochs/{}.csv'.format(coin)), ignore_index=True)
     # Establish the Start of the window
     latest_start = max(max(start_times), start_limit)
+    print(latest_start)
     missing_df = missing_df.loc[missing_df['start'] > latest_start].copy()
     # Start the Algotihm
     temp_df = pd.DataFrame()
@@ -53,10 +54,12 @@ def find_sample_period(coins,num_days,start_limit,end_limit):
     print('Start Epoch: {}'.format(int(start_time)))
     print('End Epoch: {}'.format(int(end_time)))
 
-coins = ['LTC', 'NEO', 'BCC']
-num_days = 5
+coins = ['TRX', 'ETH', 'XRP', 'LUN', 'ICX', 'ADA', 'EOS', 'XVG', 'NEBL',
+       'OMG', 'ELF', 'BCPT', 'APPC', 'LRC', 'NEO', 'FUN', 'QTUM', 'LTC',
+       'BNB', 'VEN']
+num_days = 30
 #put 0 if no preference
-start_limit = 0
+start_limit = 1515537707479
 #put 0 is no preference
 end_limit = 0
 #run the algorithm
