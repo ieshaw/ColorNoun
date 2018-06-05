@@ -14,15 +14,16 @@ def find_sample_period(coins,num_days,start_limit,end_limit):
         missing_df = missing_df.append(pd.read_csv('missing_epochs/{}.csv'.format(coin)), ignore_index=True)
     # Establish the Start of the window
     latest_start = max(max(start_times), start_limit)
-    print(latest_start)
     missing_df = missing_df.loc[missing_df['start'] > latest_start].copy()
     # Start the Algotihm
+    # Flag the start of data gaps as -1, ends as 1
     temp_df = pd.DataFrame()
     temp_df['epoch'] = missing_df['start'].copy()
     temp_df['flag'] = -1
     a_df = pd.DataFrame()
     a_df['epoch'] = missing_df['end'].copy()
     a_df['flag'] = 1
+    #sort the time frames
     temp_df = temp_df.append(a_df, ignore_index=True)
     temp_df.sort_values('epoch', ascending=True, inplace=True)
     temp_df['sum_prev'] = temp_df.flag + temp_df.flag.shift(1)
@@ -48,18 +49,19 @@ def find_sample_period(coins,num_days,start_limit,end_limit):
     # choose a random start point
     start_day = np.random.randint(0, synth_tl['length'].sum())
     query_df = synth_tl.loc[synth_tl['running_sum'] > start_day].copy()
-    start_time = (query_df['start'].values[0]) + ((start_day - query_df['running_sum'].values[0]) * ms_in_day)
+    start_time = (query_df['start'].values[0]) + ((query_df['running_sum'].values[0] - start_day) * ms_in_day)
     end_time = start_time + num_days * ms_in_day
     print('A random {} day window of data availability'.format(num_days))
     print('Start Epoch: {}'.format(int(start_time)))
     print('End Epoch: {}'.format(int(end_time)))
 
-coins = ['TRX', 'ETH', 'XRP', 'LUN', 'ICX', 'ADA', 'EOS', 'XVG', 'NEBL',
-       'OMG', 'ELF', 'BCPT', 'APPC', 'LRC', 'NEO', 'FUN', 'QTUM', 'LTC',
-       'BNB', 'VEN']
-num_days = 30
+# coins = ['TRX', 'ETH', 'XRP', 'LUN', 'ICX', 'ADA', 'EOS', 'XVG', 'NEBL',
+#        'OMG', 'ELF', 'BCPT', 'APPC', 'LRC', 'NEO', 'FUN', 'QTUM', 'LTC',
+#        'BNB', 'VEN']
+coins = ['ADA', 'NEBL', 'BCPT', 'NEO', 'FUN']
+num_days = 7
 #put 0 if no preference
-start_limit = 1515537707479
+start_limit = 1520480136383
 #put 0 is no preference
 end_limit = 0
 #run the algorithm

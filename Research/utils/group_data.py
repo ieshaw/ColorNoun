@@ -18,7 +18,7 @@ def group_returns(input_filename, output_filename, num_steps_grouped):
     filt_df.to_csv(output_filename, index=False)
 
 #Inputs
-input_filename = 'data_csvs/train.csv'
+input_filename = 'test_csvs/test_1m.csv'
 num_steps_grouped = 15
 name_min_dict = {
     '15m' : 15,
@@ -30,6 +30,6 @@ name_min_dict = {
     '1d': 24*60
 }
 for key in name_min_dict:
-    output_filename = 'data_csvs/train_{}.csv'.format(key)
+    output_filename = 'dev_csvs/train_{}.csv'.format(key)
     print('On {}'.format(key))
     group_returns(input_filename, output_filename, num_steps_grouped=name_min_dict[key])
