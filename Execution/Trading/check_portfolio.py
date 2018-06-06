@@ -35,13 +35,14 @@ beta_str = generate_fund_return_str(fund_name='Large Cap Index', key_list= large
                                key_path=key_path, orig_BTC=0.38536886, orig_USD=3626,
                                curr_BTC_val_USD= BTC_val_USD)
 #find alpha health
-alpha_str_bin = generate_fund_return_str(fund_name='Arbitrage_Bin', key_list= alpha_keys_bin,
+alpha_str_bin = generate_fund_return_str(fund_name='VAR (Binance)', key_list= alpha_keys_bin,
                                key_path=key_path, orig_BTC=0.033914920365999995, orig_USD=291.9759234753196,
                                curr_BTC_val_USD= BTC_val_USD)
 
-alpha_str_bit = generate_fund_return_str(fund_name='Arbitrage_Bit', key_list= alpha_keys_bit,
+alpha_str_bit = generate_fund_return_str(fund_name='Small Cap Index (Bittrex)', key_list= alpha_keys_bit,
                                key_path=key_path, orig_BTC=0.0322482994705332, orig_USD=277.6278675227832,
                                curr_BTC_val_USD= BTC_val_USD)
 #send email notifying about health
-# send_email(alpha_str_bin + '\n' + alpha_str_bit + '\n' + beta_str, subj='Fund Health')
-print(alpha_str_bin + '\n' + alpha_str_bit + '\n' + beta_str)
+send_email(alpha_str_bin + '\n' + alpha_str_bit + '\n' + beta_str, subj='Fund Health',
+           toaddrs=['ian@colornoun.capital'])
+# print(alpha_str_bin + '\n' + alpha_str_bit + '\n' + beta_str)

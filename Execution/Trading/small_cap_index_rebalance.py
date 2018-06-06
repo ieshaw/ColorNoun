@@ -5,10 +5,10 @@ weights_dict = small_cap(rank_ceiling=5)
 
 key_path = '.exchange_keys.json'
 key_name = 'Bittrex_Alpha'
-key_status = 'ro'
+key_status = 'live'
 
 exchange, public_key, private_key = key_retriever(key_path,key_name,key_status)
 trade_df = trade_on_weights(exchange, public_key, private_key, weights_dict, min_BTC_prop=0.2)
-# send_email('Rebalancing Small Cap Index Fund. \n\n Trade Plan. \n\n {}'.format(trade_df),
-#            subj='Small Cap Index Fund Rebalance')
-print('Rebalancing Small Cap Index Fund. \n\n Trade Plan. \n\n {}'.format(trade_df))
+send_email('Rebalancing Small Cap Index Fund. \n\n Trade Plan. \n\n {}'.format(trade_df),
+           subj='Small Cap Index Fund Rebalance', toaddrs=['ian@colornoun.capital'])
+# print('Rebalancing Small Cap Index Fund. \n\n Trade Plan. \n\n {}'.format(trade_df))

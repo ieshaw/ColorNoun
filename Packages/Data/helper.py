@@ -21,7 +21,7 @@ def instantiate_engine():
 def query_raw_data(coin,columns,first_epoch,last_epoch, conn, normalize=True, norm_min=10000):
     '''
     :param coin: string, coin ticker
-    :param columns: list of stirngs, columns desired can be
+    :param columns: list of strings, columns desired can be
         ['returns','spread','open_time','close_time','num_trades','open','high','low','close','volume',
             'quote_asset_volume','taker_buy_base_asset_volume','taker_buy_quote_asset_volume','coin']
     :param first_epoch: int
@@ -132,3 +132,33 @@ def get_data_gaps(input_df):
     missing_data = df.loc[df['diff'] > 60000].copy()
     
     return list(zip(missing_data.prev.astype(int), missing_data.open_time.astype(int)))
+
+def grab_data(coins, start_epoch, end_epoch, data_list):
+    '''
+    This returns a dataframe of the requested data
+    :param coins: list of strings, tickers of desirec coins
+    :param start_epoch: int
+    :param end_epoch: int
+    :param data_list: list of strings,
+        ['returns','spread','open_time','close_time','num_trades','open','high','low','close','volume',
+            'quote_asset_volume','taker_buy_base_asset_volume','taker_buy_quote_asset_volume','coin']
+    :return: pandas dataframe, columns of names data_TICKER (ex: return_LTC)
+    '''
+    # query data and save file
+    engine, conn = instantiate_engine()
+    data_list.append('open_time')
+    #make sure no duplicate entries in data list
+    data_list = list(set(data_list))
+    out_df = pd.DataFrame()
+    for coin in coins:
+        print('Grabbing {} Data'.format(coin))
+        temp_df = query_raw_data(coin, data_list, start_epoch, end_epoch, conn)
+        temp_df.set_index('open_time', inplace=True)
+        # rename the comlumns
+        map_dict = {}
+        for column in temp_df.columns:
+            map_dict[column] = '{}_{}'.format(column, coin)
+        temp_df.rename(columns=map_dict, inplace=True)
+        # append this to the out_Df
+        out_df = out_df.join(temp_df, how='outer')
+    return out_df

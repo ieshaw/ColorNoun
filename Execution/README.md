@@ -19,9 +19,11 @@ pip install -r requirements.txt --user
 On the intantiation of EC2 instance execute the command `crontab -e` and provide the following commands.
 
 ```angular2html
-*/5 * * * * python -m Execution.Trading.arb.py
 2 * * * * python -m Execution.Trading.check_portfolio.py
 3 8 * * * * python -m Execution.Trading.large_cap_index_rebalace.py
+4 8 * * * * python -m Execution.Trading.small_cap_index_rebalace.py
+10 */2 * * * python -m Execution.Trading.VAR.py
+1 * * * * python -m Execution.Data.update_db.py
 ```
 
 ### Screen Setting
