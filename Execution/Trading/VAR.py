@@ -27,15 +27,19 @@ month_ago = current_epoch - 7 * ms_in_day
 train_df = data_helper.grab_data(coins, start_epoch=month_ago, end_epoch=current_epoch, data_list=data_types)
 train_df.dropna(inplace=True)
 two_hour_df = group_returns(train_df,120).dropna()
-# Create VAR Model
-model = VAR(train_df.values)
-results = model.fit(maxlags=30, ic='aic')
-lag_order = results.k_ar
-#Make Predictions
-pred_array = results.forecast(two_hour_df[-lag_order:].values, steps=1)
-#only consider predictions above roundtrip transaction costs
-weight_array = np.where(pred_array > 0.005, pred_array, 0)
-weight_dict =dict(zip(coins,weight_array.tolist()[0]))
+try:
+    # Create VAR Model
+    model = VAR(two_hour_df.values)
+    results = model.fit(maxlags=30, ic='aic')
+    lag_order = results.k_ar
+    #Make Predictions
+    pred_array = results.forecast(two_hour_df[-lag_order:].values, steps=1)
+    #only consider predictions above roundtrip transaction costs
+    weight_array = np.where(pred_array > 0.005, pred_array, 0)
+    weight_dict =dict(zip(coins,weight_array.tolist()[0]))
+except:
+    #if it doesnt work, just have all in BTC
+    weight_dict =dict(zip(coins,np.zeros(len(coins))))
 ##Run Trades
 key_path = '.exchange_keys.json'
 key_name = 'Binance_Alpha'
