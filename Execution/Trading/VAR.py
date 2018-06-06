@@ -32,7 +32,7 @@ model = VAR(train_df.values)
 results = model.fit(maxlags=30, ic='aic')
 lag_order = results.k_ar
 #Make Predictions
-pred_array = results.forecast(train_df[-lag_order:].values, steps=1)
+pred_array = results.forecast(two_hour_df[-lag_order:].values, steps=1)
 #only consider predictions above roundtrip transaction costs
 weight_array = np.where(pred_array > 0.005, pred_array, 0)
 weight_dict =dict(zip(coins,weight_array.tolist()[0]))

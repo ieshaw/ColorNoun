@@ -1,7 +1,8 @@
 coinmarketcap
+mysql-connector==2.1.4
 pandas
 python-binance
 python-bittrex
 sqlalchemy
-mysql-connector==2.1.4
+scipy
 statsmodels

@@ -1,7 +1,7 @@
 from Packages.API.General.helper import key_retriever, all_to_BTC
 
 key_path = '.exchange_keys.json'
-key_name = 'Bittrex_Alpha'
+key_name = 'Binance_Alpha'
 key_status = 'live'
 
 exchange, public_key, private_key = key_retriever(key_path,key_name,key_status)
