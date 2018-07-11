@@ -11,6 +11,6 @@ weights_dict = large_cap()
 trade_df = trade_on_weights(exchange, public_key, private_key, weights_dict,
                             min_BTC_prop=0.2)
 #send an email notifying
-send_email('Rebalancing Large Cap Index Fund. \n\n Trade Plan. \n\n {}'.format(trade_df),
-           subj='Large Cap Index Fund Rebalance', toaddrs=['ian@colornoun.capital'])
-# print('Rebalancing Large Cap Index Fund. \n\n Trade Plan. \n\n {}'.format(trade_df))
+# send_email('Rebalancing Large Cap Index Fund. \n\n Trade Plan. \n\n {}'.format(trade_df),
+#            subj='Large Cap Index Fund Rebalance', toaddrs=['ian@colornoun.capital'])
+print('Rebalancing Large Cap Index Fund. \n\n Trade Plan. \n\n {}'.format(trade_df))

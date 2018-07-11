@@ -86,6 +86,7 @@ def plan_trades(exchange_df, weights_dict,
     trade_df['Target_Dist'].fillna(0, inplace=True)
     #Make sure that the weights sum to 1
     trade_df.Target_Dist /= trade_df.Target_Dist.sum()
+    trade_df['Target_Dist'].fillna(0, inplace=True)
     # If the target dist for non BTC is higher than non BTC propotion, rescale
     target_dist_BTC = trade_df.loc[trade_df.index == 'BTC', 'Target_Dist'].values[0]
     if min_BTC_prop > target_dist_BTC:

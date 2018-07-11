@@ -9,6 +9,6 @@ key_status = 'live'
 
 exchange, public_key, private_key = key_retriever(key_path,key_name,key_status)
 trade_df = trade_on_weights(exchange, public_key, private_key, weights_dict, min_BTC_prop=0.2)
-send_email('Rebalancing Small Cap Index Fund. \n\n Trade Plan. \n\n {}'.format(trade_df),
-           subj='Small Cap Index Fund Rebalance', toaddrs=['ian@colornoun.capital'])
-# print('Rebalancing Small Cap Index Fund. \n\n Trade Plan. \n\n {}'.format(trade_df))
+# send_email('Rebalancing Small Cap Index Fund. \n\n Trade Plan. \n\n {}'.format(trade_df),
+#            subj='Small Cap Index Fund Rebalance', toaddrs=['ian@colornoun.capital'])
+print('Rebalancing Small Cap Index Fund. \n\n Trade Plan. \n\n {}'.format(trade_df))

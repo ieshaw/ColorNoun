@@ -1,7 +1,7 @@
 from Packages.API.General.helper import key_retriever, get_exchange_df, instantiate_api_object
 
 key_path = '.exchange_keys.json'
-key_name = 'Binance_Alpha'
+key_name = 'Bittrex_Beta_Large'
 key_status = 'ro'
 
 exchange, public_key, private_key = key_retriever(key_path,key_name,key_status)

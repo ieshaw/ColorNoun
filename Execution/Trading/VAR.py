@@ -6,6 +6,12 @@ import pandas as pd
 import time
 
 def group_returns(input_df, num_steps_grouped):
+    '''
+    :param input_df: pandas dataframe, columns of floats of return_TICKER
+    :param num_steps_grouped: number of rows to group together, rows are minutes.
+        for example, a half hour would be 30
+    :return: pandas dataframe, columns of floats of return_TICKER at adjusted time scale
+    '''
     ## Manipulate DataFrame
     data_df = input_df.copy()
     out_cols = data_df.columns
@@ -40,11 +46,13 @@ try:
 except:
     #if it doesnt work, just have all in BTC
     weight_dict =dict(zip(coins,np.zeros(len(coins))))
+    for key in weight_dict:
+        weight_dict[key] = float(weight_dict[key])
 ##Run Trades
 key_path = '.exchange_keys.json'
 key_name = 'Binance_Alpha'
 key_status = 'live'
 exchange, public_key, private_key = key_retriever(key_path,key_name,key_status)
 trade_df = trade_on_weights(exchange, public_key, private_key, weight_dict, min_BTC_prop=0.5)
-send_email('Running VAR. \n\n Trade Plan. \n\n {}'.format(trade_df),
+send_email('Running VAR. \n\n Weight Dict \n\n {} \n\n \n\n Trade Plan. \n\n {}'.format(weight_dict,trade_df),
             subj='VAR', toaddrs=['ian@colornoun.capital'])

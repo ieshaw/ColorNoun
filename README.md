@@ -27,3 +27,11 @@ All code is written to import local modules. To run a set of code, execute from 
 ```
 ColorNoun name$ python -m Path.to.script.py
 ```
+
+## Creating Virtualenv
+
+If necessary, update pip
+
+```angularjs
+curl https://bootstrap.pypa.io/get-pip.py | python
+```
